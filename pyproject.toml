@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "openai-api"
+version = "0.1.0"
+description = ""
+authors = ["Nikita Rydanov <wrongwayboyy@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+openai = "^0.27.8"
+tenacity = "^8.2.2"
+numpy = "^1.25.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
