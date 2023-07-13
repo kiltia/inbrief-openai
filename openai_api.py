@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 import openai
-from .prompts import CLASSIFY_TASK, EXAMPLE_REQUEST, EXAMPLE_RESPONSE
+from prompts import CLASSIFY_TASK, EXAMPLE_REQUEST, EXAMPLE_RESPONSE
 from tenacity import (
     after_log,
     before_log,
