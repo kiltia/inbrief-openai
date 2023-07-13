@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "openai-api"
+name = "openai_api"
 version = "0.1.0"
 description = ""
 authors = ["Nikita Rydanov <wrongwayboyy@gmail.com>"]
