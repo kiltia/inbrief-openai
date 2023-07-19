@@ -2,7 +2,6 @@ import logging
 
 import numpy as np
 import openai
-from openai_api.prompts import CLASSIFY_TASK, EXAMPLE_REQUEST, EXAMPLE_RESPONSE
 from tenacity import (
     after_log,
     before_log,
@@ -11,6 +10,8 @@ from tenacity import (
     stop_after_attempt,
     wait_exponential,
 )
+
+from openai_api.prompts import CLASSIFY_TASK, EXAMPLE_REQUEST, EXAMPLE_RESPONSE
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +23,19 @@ logger = logging.getLogger(__name__)
     before_sleep=before_sleep_log(logger, logging.INFO),
     reraise=True,
 )
-async def get_embeddings(input, model):
+async def aget_embeddings(input, model):
     return (await openai.Embedding.acreate(input=input, model=model))["data"]
+
+
+@retry(
+    wait=wait_exponential(min=2, max=60, multiplier=2),
+    after=after_log(logger, logging.INFO),
+    before=before_log(logger, log_level=logging.INFO),
+    before_sleep=before_sleep_log(logger, logging.INFO),
+    reraise=True,
+)
+def get_embeddings(input, model):
+    return openai.Embedding.create(input=input, model=model)["data"]
 
 
 async def summarize(input, model):
