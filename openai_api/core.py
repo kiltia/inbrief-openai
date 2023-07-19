@@ -24,7 +24,9 @@ logger = logging.getLogger(__name__)
     reraise=True,
 )
 async def aget_embeddings(input, model):
-    return (await openai.Embedding.acreate(input=input, model=model))["data"]
+    embs = await openai.Embedding.acreate(input=input, model=model)["data"]
+
+    return list(map(lambda x: x["embedding"], embs))
 
 
 @retry(
@@ -35,7 +37,9 @@ async def aget_embeddings(input, model):
     reraise=True,
 )
 def get_embeddings(input, model):
-    return openai.Embedding.create(input=input, model=model)["data"]["embedding"]
+    embs = openai.Embedding.create(input=input, model=model)["data"]
+
+    return list(map(lambda x: x["embedding"], embs))
 
 
 async def summarize(input, model):
