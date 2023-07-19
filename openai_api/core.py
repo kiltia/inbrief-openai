@@ -35,7 +35,7 @@ async def aget_embeddings(input, model):
     reraise=True,
 )
 def get_embeddings(input, model):
-    return openai.Embedding.create(input=input, model=model)["data"]
+    return openai.Embedding.create(input=input, model=model)["data"]["embedding"]
 
 
 async def summarize(input, model):
