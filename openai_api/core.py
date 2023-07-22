@@ -76,8 +76,24 @@ async def asummarize(input, model):
         )
     )["choices"][0]["message"]["content"]
 
+def get_title(input, model):
+    return (
+        openai.ChatCompletion.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Тебе будет дан набор текстов, принадлежащих к одному сюжету. Тебе будет необходимо выделить общие черты сюжета и придумать новостной заголовок для него. Отвечай только самим заголовком",
+                },
+                {"role": "user", "content": "\n".join(input)},
+            ],
+            temperature=0.2,
+            presence_penalty=-1.5,
+            timeout=30,
+        )
+    )["choices"][0]["message"]["content"]
 
-async def get_title(input, model):
+async def aget_title(input, model):
     return (
         await openai.ChatCompletion.acreate(
             model=model,
