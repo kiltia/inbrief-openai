@@ -42,7 +42,24 @@ def get_embeddings(input, model):
     return list(map(lambda x: x["embedding"], embs))
 
 
-async def summarize(input, model):
+def summarize(input, model):
+    return (
+        openai.ChatCompletion.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Тебе необходимо суммаризовать текст в новый текст, сохранив только САМЫЕ основные моменты повествования. Необходимо уложиться в 300 символов.",
+                },
+                {"role": "user", "content": "\n".join(input)},
+            ],
+            temperature=0.2,
+            presence_penalty=-1.5,
+            timeout=30,
+        )
+    )["choices"][0]["message"]["content"]
+
+async def asummarize(input, model):
     return (
         await openai.ChatCompletion.acreate(
             model=model,
