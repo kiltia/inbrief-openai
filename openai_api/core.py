@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 @retry(
     wait=wait_exponential(min=2, max=60, multiplier=2),
     after=after_log(logger, logging.INFO),
-    before=before_log(logger, log_level=logging.INFO),
-    before_sleep=before_sleep_log(logger, logging.INFO),
+    before=before_log(logger, log_level=logging.DEBUG),
+    before_sleep=before_sleep_log(logger, logging.DEBUG),
     reraise=True,
 )
 async def aget_embeddings(input, model):
@@ -32,8 +32,8 @@ async def aget_embeddings(input, model):
 @retry(
     wait=wait_exponential(min=2, max=60, multiplier=2),
     after=after_log(logger, logging.INFO),
-    before=before_log(logger, log_level=logging.INFO),
-    before_sleep=before_sleep_log(logger, logging.INFO),
+    before=before_log(logger, log_level=logging.DEBUG),
+    before_sleep=before_sleep_log(logger, logging.DEBUG),
     reraise=True,
 )
 def get_embeddings(input, model):
@@ -59,6 +59,7 @@ def summarize(input, model):
         )
     )["choices"][0]["message"]["content"]
 
+
 async def asummarize(input, model):
     return (
         await openai.ChatCompletion.acreate(
@@ -77,6 +78,7 @@ async def asummarize(input, model):
         )
     )["choices"][0]["message"]["content"]
 
+
 def get_title(input, model):
     return (
         openai.ChatCompletion.create(
@@ -93,6 +95,7 @@ def get_title(input, model):
             timeout=30,
         )
     )["choices"][0]["message"]["content"]
+
 
 async def aget_title(input, model):
     return (
@@ -158,8 +161,8 @@ def classify_attempt(attempt, categories, max_retries, **kwargs):
 @retry(
     wait=wait_exponential(min=2, max=60, multiplier=2),
     after=after_log(logger, logging.INFO),
-    before=before_log(logger, log_level=logging.INFO),
-    before_sleep=before_sleep_log(logger, logging.INFO),
+    before=before_log(logger, log_level=logging.DEBUG),
+    before_sleep=before_sleep_log(logger, logging.DEBUG),
     stop=stop_after_attempt(3),
     reraise=True,
 )
