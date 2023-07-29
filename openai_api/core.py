@@ -66,13 +66,14 @@ async def asummarize(input, model):
             messages=[
                 {
                     "role": "system",
-                    "content": "Тебе необходимо суммаризовать текст в новый текст, сохранив только САМЫЕ основные моменты повествования. Необходимо уложиться в 300 символов.",
+                    "content": 'Тебе необходимо суммаризовать текст в новый текст, сохранив только САМЫЕ основные моменты повествования. Необходимо строго уложиться в 300 символов. Не надо давать никаких лишних комментариев "от себя" к ответу, кроме самой суммаризации.',
                 },
                 {"role": "user", "content": "\n".join(input)},
             ],
             temperature=0.2,
             presence_penalty=-1.5,
             timeout=30,
+            max_tokens=300,
         )
     )["choices"][0]["message"]["content"]
 
@@ -100,13 +101,14 @@ async def aget_title(input, model):
             messages=[
                 {
                     "role": "system",
-                    "content": "Тебе будет дан набор текстов, принадлежащих к одному сюжету. Тебе будет необходимо выделить общие черты сюжета и придумать новостной заголовок для него. Отвечай только самим заголовком",
+                    "content": "Тебе будет дан текст, принадлежащих к одному сюжету. Тебе будет необходимо выделить общие черты сюжета и придумать новостной заголовок для него. Отвечай только самим заголовком",
                 },
                 {"role": "user", "content": "\n".join(input)},
             ],
             temperature=0.2,
             presence_penalty=-1.5,
             timeout=30,
+            max_tokens=50,
         )
     )["choices"][0]["message"]["content"]
 
@@ -123,13 +125,13 @@ def classify_attempt(attempt, categories, max_retries, **kwargs):
 
     if attempt > max_retries:
         return None
-    logging.info(f"Creating request {attempt + 1} for chat completion")
+    logging.debug(f"Creating request {attempt + 1} for chat completion")
     completion = openai.ChatCompletion.create(**kwargs)
     response = completion["choices"][0]["message"]["content"]
-    logging.info(f"Got response from OpenAI: {response}")
+    logging.debug(f"Got response from OpenAI: {response}")
     status, value = validate_response(response, categories)
     if status:
-        logging.info("Response has correct format")
+        logging.debug("Response has correct format")
         return value
     else:
         messages = kwargs.pop("messages")
