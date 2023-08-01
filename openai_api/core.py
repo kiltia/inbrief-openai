@@ -11,7 +11,13 @@ from tenacity import (
     wait_exponential,
 )
 
-from openai_api.prompts import CLASSIFY_TASK, EXAMPLE_REQUEST, EXAMPLE_RESPONSE
+from openai_api.prompts import (
+    CLASSIFY_TASK,
+    EXAMPLE_REQUEST,
+    EXAMPLE_RESPONSE,
+    SUMMARIZE_TASK,
+    TITLE_TASK,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -42,40 +48,42 @@ def get_embeddings(input, model):
     return list(map(lambda x: x["embedding"], embs))
 
 
-def summarize(input, model):
+def summarize(
+    input, model, max_tokens=300, temperature=0.2, presense_penalty=-1.5, timeout=30
+):
+    content = f"{SUMMARIZE_TASK}. Необходимо уложиться в {max_tokens} символов."
     return (
         openai.ChatCompletion.create(
             model=model,
             messages=[
-                {
-                    "role": "system",
-                    "content": "Тебе необходимо суммаризовать текст в новый текст, сохранив только САМЫЕ основные моменты повествования. Необходимо уложиться в 300 символов.",
-                },
+                {"role": "system", "content": content},
                 {"role": "user", "content": "\n".join(input)},
             ],
-            temperature=0.2,
-            presence_penalty=-1.5,
-            timeout=30,
+            temperature=temperature,
+            presence_penalty=presense_penalty,
+            timeout=timeout,
+            max_tokens=max_tokens,
         )
     )["choices"][0]["message"]["content"]
 
 
-async def asummarize(input, model):
-    return (
-        await openai.ChatCompletion.acreate(
-            model=model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": 'Тебе необходимо суммаризовать текст в новый текст, сохранив только САМЫЕ основные моменты повествования. Необходимо строго уложиться в 300 символов. Не надо давать никаких лишних комментариев "от себя" к ответу, кроме самой суммаризации.',
-                },
-                {"role": "user", "content": "\n".join(input)},
-            ],
-            temperature=0.2,
-            presence_penalty=-1.5,
-            timeout=30,
-            max_tokens=300,
-        )
+async def asummarize(
+    input, model, max_tokens=300, temperature=0.2, presense_penalty=-1.5, timeout=30
+):
+    content = f"{SUMMARIZE_TASK}. Необходимо уложиться в {max_tokens} символов."
+    return await openai.ChatCompletion.acreate(
+        model=model,
+        messages=[
+            {
+                "role": "system",
+                "content": content,
+            },
+            {"role": "user", "content": "\n".join(input)},
+        ],
+        temperature=temperature,
+        presence_penalty=presense_penalty,
+        timeout=timeout,
+        max_tokens=max_tokens,
     )["choices"][0]["message"]["content"]
 
 
@@ -84,10 +92,7 @@ def get_title(input, model):
         openai.ChatCompletion.create(
             model=model,
             messages=[
-                {
-                    "role": "system",
-                    "content": "Тебе будет дан набор текстов, принадлежащих к одному сюжету. Тебе будет необходимо выделить общие черты сюжета и придумать новостной заголовок для него. Отвечай только самим заголовком",
-                },
+                {"role": "system", "content": TITLE_TASK},
                 {"role": "user", "content": "\n".join(input)},
             ],
             temperature=0.2,
@@ -104,7 +109,7 @@ async def aget_title(input, model):
             messages=[
                 {
                     "role": "system",
-                    "content": "Тебе будет дан текст, принадлежащих к одному сюжету. Тебе будет необходимо выделить общие черты сюжета и придумать новостной заголовок для него. Отвечай только самим заголовком",
+                    "content": TITLE_TASK,
                 },
                 {"role": "user", "content": "\n".join(input)},
             ],
