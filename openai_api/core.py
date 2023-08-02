@@ -64,7 +64,7 @@ def summarize(
                 {"role": "assistant", "content": SUMMARIZE_EXAMPLE_RESPONSE},
                 {
                     "role": "system",
-                    "content": f"Необходимо использовать не более {max_tokens} символов",
+                    "content": f"Только необходимо использовать не более {max_tokens} символов. Теперь тебе будет дан новый текст, нужно суммаризовать его.",
                 },
                 {"role": "user", "content": "\n".join(input)},
             ],
@@ -87,7 +87,7 @@ async def asummarize(
             {"role": "assistant", "content": SUMMARIZE_EXAMPLE_RESPONSE},
             {
                 "role": "system",
-                "content": f"Необходимо использовать не более {max_tokens} символов",
+                "content": f"Только необходимо использовать не более {max_tokens} символов. Теперь тебе будет дан новый текст, нужно суммаризовать его.",
             },
             {"role": "user", "content": "\n".join(input)},
         ],
@@ -108,7 +108,7 @@ def get_title(input, model, max_tokens=20):
                 {"role": "assistant", "content": TITLE_EXAMPLE_RESPONSE},
                 {
                     "role": "system",
-                    "content": f"Необходимо использовать не более {max_tokens} символов",
+                    "content": f"Только необходимо использовать не более {max_tokens} символов. Теперь тебе будет дан новый текст, нужно придумать заголовок для него.",
                 },
                 {"role": "user", "content": "\n".join(input)},
             ],
@@ -127,13 +127,13 @@ async def aget_title(input, model, max_tokens=20):
             messages=[
                 {
                     "role": "system",
-                    "content": f"{TITLE_TASK}Необходимо использовать не более {max_tokens} символов",
+                    "content": TITLE_TASK,
                 },
                 {"role": "user", "content": TITLE_EXAMPLE_REQUEST},
                 {"role": "assistant", "content": TITLE_EXAMPLE_RESPONSE},
                 {
                     "role": "system",
-                    "content": f"Необходимо использовать не более {max_tokens} символов",
+                    "content": f"Только необходимо использовать не более {max_tokens} символов. Теперь держи новый текст, нужен заголовок для него.",
                 },
                 {"role": "user", "content": "\n".join(input)},
             ],
