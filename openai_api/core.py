@@ -98,6 +98,7 @@ def get_title(input, model):
             temperature=0.2,
             presence_penalty=-1.5,
             timeout=30,
+            max_tokens=50,
         )
     )["choices"][0]["message"]["content"]
 
