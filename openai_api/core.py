@@ -117,7 +117,7 @@ def get_title(input, model, max_tokens=20):
     )["choices"][0]["message"]["content"]
 
 
-async def aget_title(input, model):
+async def aget_title(input, model, max_tokens=20):
     return (
         await openai.ChatCompletion.acreate(
             model=model,
@@ -126,28 +126,6 @@ async def aget_title(input, model):
                     "role": "system",
                     "content": f"{TITLE_TASK}Необходимо использовать не более {max_tokens} символов",
                 },
-                {"role": "user", "content": TITLE_EXAMPLE_REQUEST},
-                {"role": "assistant", "content": TITLE_EXAMPLE_RESPONSE},
-                {
-                    "role": "system",
-                    "content": f"Необходимо использовать не более {max_tokens} символов",
-                },
-                {"role": "user", "content": "\n".join(input)},
-            ],
-            temperature=0.2,
-            presence_penalty=-1.5,
-            timeout=30,
-            max_tokens=max_tokens,
-        )
-    )["choices"][0]["message"]["content"]
-
-
-async def aget_title(input, model, max_tokens=20):
-    return (
-        await openai.ChatCompletion.acreate(
-            model=model,
-            messages=[
-                {"role": "system", "content": TITLE_TASK},
                 {"role": "user", "content": TITLE_EXAMPLE_REQUEST},
                 {"role": "assistant", "content": TITLE_EXAMPLE_RESPONSE},
                 {
@@ -224,7 +202,7 @@ def classify(text, categories, model, max_retries):
         messages=[
             {"role": "system", "content": CLASSIFY_TASK + "\n" + class_list},
             {"role": "user", "content": CLASSIFY_EXAMPLE_REQUEST},
-            {"role": "assistant", "content": EXAMPLE_RESPONSE},
+            {"role": "assistant", "content": CLASSIFY_EXAMPLE_RESPONSE},
             {"role": "user", "content": text},
         ],
         temperature=0.2,
