@@ -55,14 +55,11 @@ def get_embeddings(input, model):
 def summarize(
     input, model, max_tokens=300, temperature=0.2, presense_penalty=-1.5, timeout=30
 ):
-    content = (
-        f"{SUMMARIZE_TASK}. Необходимо использовать не более {max_tokens} символов."
-    )
     return (
         openai.ChatCompletion.create(
             model=model,
             messages=[
-                {"role": "system", "content": content},
+                {"role": "system", "content": SUMMARIZE_TASK},
                 {"role": "user", "content": SUMMARIZE_EXAMPLE_REQUEST},
                 {"role": "assistant", "content": SUMMARIZE_EXAMPLE_RESPONSE},
                 {
@@ -107,6 +104,12 @@ def get_title(input, model, max_tokens=20):
             model=model,
             messages=[
                 {"role": "system", "content": TITLE_TASK},
+                {"role": "user", "content": TITLE_EXAMPLE_REQUEST},
+                {"role": "assistant", "content": TITLE_EXAMPLE_RESPONSE},
+                {
+                    "role": "system",
+                    "content": f"Необходимо использовать не более {max_tokens} символов",
+                },
                 {"role": "user", "content": "\n".join(input)},
             ],
             temperature=0.2,
