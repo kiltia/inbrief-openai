@@ -15,12 +15,8 @@ from openai_api.prompts import (
     CLASSIFY_EXAMPLE_REQUEST,
     CLASSIFY_EXAMPLE_RESPONSE,
     CLASSIFY_TASK,
-    SUMMARIZE_EXAMPLE_REQUEST,
-    SUMMARIZE_EXAMPLE_RESPONSE,
-    SUMMARIZE_TASK,
-    TITLE_EXAMPLE_REQUEST,
-    TITLE_EXAMPLE_RESPONSE,
-    TITLE_TASK,
+    get_summary_context,
+    get_title_context,
 )
 
 logger = logging.getLogger(__name__)
@@ -58,16 +54,7 @@ def summarize(
     return (
         openai.ChatCompletion.create(
             model=model,
-            messages=[
-                {"role": "system", "content": SUMMARIZE_TASK},
-                {"role": "user", "content": SUMMARIZE_EXAMPLE_REQUEST},
-                {"role": "assistant", "content": SUMMARIZE_EXAMPLE_RESPONSE},
-                {
-                    "role": "system",
-                    "content": f"Только необходимо использовать не более {max_tokens} символов. Теперь тебе будет дан новый текст, нужно суммаризовать его.",
-                },
-                {"role": "user", "content": "\n".join(input)},
-            ],
+            messages=get_summary_context(input, max_tokens),
             temperature=temperature,
             presence_penalty=presense_penalty,
             timeout=timeout,
@@ -81,16 +68,7 @@ async def asummarize(
 ):
     return await openai.ChatCompletion.acreate(
         model=model,
-        messages=[
-            {"role": "system", "content": SUMMARIZE_TASK},
-            {"role": "user", "content": SUMMARIZE_EXAMPLE_REQUEST},
-            {"role": "assistant", "content": SUMMARIZE_EXAMPLE_RESPONSE},
-            {
-                "role": "system",
-                "content": f"Только необходимо использовать не более {max_tokens} символов. Теперь тебе будет дан новый текст, нужно суммаризовать его.",
-            },
-            {"role": "user", "content": "\n".join(input)},
-        ],
+        messages=get_summary_context(input, max_tokens),
         temperature=temperature,
         presence_penalty=presense_penalty,
         timeout=timeout,
@@ -102,20 +80,11 @@ def get_title(input, model, max_tokens=20):
     return (
         openai.ChatCompletion.create(
             model=model,
-            messages=[
-                {"role": "system", "content": TITLE_TASK},
-                {"role": "user", "content": TITLE_EXAMPLE_REQUEST},
-                {"role": "assistant", "content": TITLE_EXAMPLE_RESPONSE},
-                {
-                    "role": "system",
-                    "content": f"Только необходимо использовать не более {max_tokens} символов. Теперь тебе будет дан новый текст, нужно придумать заголовок для него.",
-                },
-                {"role": "user", "content": "\n".join(input)},
-            ],
+            messages=get_title_context(input, max_tokens),
             temperature=0.2,
             presence_penalty=-1.5,
             timeout=30,
-            max_tokens=50,
+            max_tokens=max_tokens,
         )
     )["choices"][0]["message"]["content"]
 
@@ -124,19 +93,7 @@ async def aget_title(input, model, max_tokens=20):
     return (
         await openai.ChatCompletion.acreate(
             model=model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": TITLE_TASK,
-                },
-                {"role": "user", "content": TITLE_EXAMPLE_REQUEST},
-                {"role": "assistant", "content": TITLE_EXAMPLE_RESPONSE},
-                {
-                    "role": "system",
-                    "content": f"Только необходимо использовать не более {max_tokens} символов. Теперь держи новый текст, нужен заголовок для него.",
-                },
-                {"role": "user", "content": "\n".join(input)},
-            ],
+            messages=get_title_context(input, max_tokens),
             temperature=0.2,
             presence_penalty=-1.5,
             timeout=30,

@@ -28,3 +28,31 @@ TITLE_EXAMPLE_REQUEST = SUMMARIZE_EXAMPLE_REQUEST
 TITLE_EXAMPLE_RESPONSE = "Ситуация вокруг ЗАЭС"
 
 TITLE_TASK = "Тебе будет дан текст. Тебе будет необходимо выделить общие черты сюжета в нем и придумать новостной заголовок для него в формате telegram заголовка. Отвечай только самим заголовком без дополнительных комментариев и пояснений."
+
+
+def get_summary_context(input, max_tokens):
+    return [
+        {"role": "system", "content": SUMMARIZE_TASK},
+        {"role": "user", "content": SUMMARIZE_EXAMPLE_REQUEST},
+        {"role": "assistant", "content": SUMMARIZE_EXAMPLE_RESPONSE},
+        {
+            "role": "system",
+            "content": f"Необходимо использовать строго не более {max_tokens} токенов. Теперь тебе будет дан новый текст, нужно суммаризовать его. Отвечай только результатом суммаризации, без дополнительных комментариев и пояснений. Формулируй ответ таким образом, чтобы он не обрывался ограничением на число токенов.",
+        },
+        {"role": "user", "content": "\n".join(input)},
+    ]
+
+
+def get_title_context(input, max_tokens):
+    return (
+        [
+            {"role": "system", "content": TITLE_TASK},
+            {"role": "user", "content": TITLE_EXAMPLE_REQUEST},
+            {"role": "assistant", "content": TITLE_EXAMPLE_RESPONSE},
+            {
+                "role": "system",
+                "content": f"Необходимо использовать строго не более {max_tokens} токенов. Теперь тебе будет дан новый текст, нужно придумать заголовок для него. Отвечай только результатом суммаризации, без дополнительных комментариев и пояснений. Формулируй ответ таким образом, чтобы он не обрывался ограничением на число токенов.",
+            },
+            {"role": "user", "content": "\n".join(input)},
+        ],
+    )
